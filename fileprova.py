@@ -23,11 +23,9 @@ var11 = ['i am a bot', 'i am you father, Luke']
 var2 = [ ' I was made by Sveva', ' I was made by Simone', ' I was made by Marco']
 var3 = ['what time is it', 'what is the time', 'time']
 var4 = ['who are you', 'what is you name']
-cmd1 = ['open browser', 'open google']
 cmd2 = ['play music', 'play songs', 'play a song', 'open music player']
 cmd3 = ['tell a joke', 'tell me a joke', 'say something funny', 'tell something funny']
 jokes = ['Can a kangaroo jump higher than a house? Of course, a house doesn’t jump at all.', 'My dog used to chase people on a bike a lot. It got so bad, finally I had to take his bike away.', 'Doctor: Im sorry but you suffer from a terminal illness and have only 10 to live.Patient: What do you mean, 10? 10 what? Months? Weeks?!"Doctor: Nine.']
-cmd4 = ['open youtube', 'i want to watch a video']
 cmd6 = ['exit', 'close', 'goodbye', 'nothing']
 cmd7 = ['what is your color', 'what is your colour', 'your color', 'your color?']
 colrep = ['Right now its rainbow', 'Right now its transparent', 'Right now its non chromatic']
@@ -89,8 +87,6 @@ def skills(command):
         reply = random.choice(var11)
         PippoResponse(reply)
         myCommand()
-    elif command in cmd4:
-        webbrowser.open('www.youtube.com')
     elif command in cmd6:
         PippoResponse('Bye, see you later')
         exit()
@@ -99,8 +95,6 @@ def skills(command):
         reply= now.strftime("The time is %H:%M")
         PippoResponse(reply)
         myCommand()
-    elif command in cmd1:
-        webbrowser.open('www.google.com')
     elif command in cmd3:
         reply = random.choice(jokes)
         PippoResponse(reply)
