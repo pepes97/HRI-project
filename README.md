@@ -2,8 +2,8 @@
 
 ## Requirements
 ```bash
-sudo apt install libespeack1
-python3.7 -m pip install SpeechRecognition pyttsx3 pygame wikipedia --user
+sudo apt install libespeak1
+python3 -m pip install SpeechRecognition pyttsx3 pygame wikipedia --user
 sudo apt install python-pyaudio python3-pyaudio
 ```
 
