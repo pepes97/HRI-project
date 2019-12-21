@@ -9,7 +9,8 @@ import wikipedia
 from pygame import mixer
 import speech_recognition as sr
 
-reader = WordListCorpusReader('.', ['earth.txt', 'mars.txt'])
+dir="./archive"
+reader = WordListCorpusReader('.', [dir+'/earth.txt', dir+'/mars.txt'])
 
 print(reader.words())
 print(reader.fileids())
@@ -66,10 +67,101 @@ def PippoResponse(audio):
     engine.say(audio)
     engine.runAndWait()
 
-def skills(command):   
-    if command=="1":
+def skills(command): 
+
+    if command=="earth":
         s=""
-        f = open("mars.txt", "a")
+        f = open(dir+"/earth.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()  
+
+    elif command=="mars":
+        s=""
+        f = open(dir+"/mars.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()
+
+    elif command=="jupiter":
+        s=""
+        f = open(dir+"/jupiter.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()
+    
+    elif command=="saturn":
+        s=""
+        f = open(dir+"/saturn.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()
+
+    elif command=="venus":
+        s=""
+        f = open(dir+"/venus.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()
+
+    elif command=="mercury":
+        s=""
+        f = open(dir+"/mercury.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()
+
+    elif command=="neptune":
+        s=""
+        f = open(dir+"/neptune.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()
+
+    elif command=="moon":
+        s=""
+        f = open(dir+"/moon.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()
+
+    elif command=="black hole":
+        s=""
+        f = open(dir+"/blackhole.txt", "a")
+        while s!="stop":
+            s=teach()
+            if(s!="stop"):
+                f.write(s+'\n')
+        print("stop")
+        f.close()
+
+    elif command=="sun":
+        s=""
+        f = open(dir+"/sun.txt", "a")
         while s!="stop":
             s=teach()
             if(s!="stop"):
