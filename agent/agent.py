@@ -79,7 +79,8 @@ class Agent:
             for i, system in enumerate(self.kb["systems"]):
                 if system["system"]==system_name:
                     self.say(f"I know {len(system['planets'])} planets of {system_name} system")
-                    self.say(f"The planets that i know are")
+                    if len(system['planets'])>0:
+                        self.say(f"The planets that i know are")
                     for p in system["planets"]:
                         self.say(p['planet'])
                     return
