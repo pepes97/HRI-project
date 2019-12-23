@@ -53,9 +53,12 @@ class Agent:
         # radius of jupiter
         
         "ask_mass":["what is the mass of (?P<planet_name>[a-z]+)", "mass of (?P<planet_name>[a-z]+)"],
-        
-        "ask_orbit_time":["what is the orbital period of (?P<planet_name>[a-z]+)", "orbital period of (?P<planet_name>[a-z]+)"],
-        
+        # mass of jupiter
+
+        "ask_orbit_time":["what is the orbital period of (?P<planet_name>[a-z]+)", "orbital period of (?P<planet_name>[a-z]+)",
+                        "the orbital period of (?P<planet_name>[a-z]+)"],
+        # orbital period of jupiter 
+
         #"ask_temperature":[]
 
         }
