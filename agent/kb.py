@@ -8,6 +8,9 @@ class KB:
             self.kb = self.load(path)
         elif new==False:
             last = os.listdir("./agent/kb")
+            if len(last)==0:
+                self.kb = self.new_kb()
+                return    
             last.sort()
             last = last[-1]
             self.kb = self.load(last)
