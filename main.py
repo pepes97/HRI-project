@@ -16,6 +16,8 @@ speaker = Speaker()
 
 bot_name = "\t\t\t\t\tAstroBot"
 agent = Agent(speaker, listener, bot_name)
+print(f"{bot_name}: Hi, how can I help you?")
+speaker.speak("Hi, how can I help you?")
 
 while True:
     command = listener.listen()
