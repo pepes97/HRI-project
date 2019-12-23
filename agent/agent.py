@@ -1,4 +1,5 @@
 import re
+import sys
 from agent.kb import KB
 
 class Agent:
@@ -30,8 +31,14 @@ class Agent:
         "ask_planet":["tell me planets of (?P<system_name>[a-z]+) system", "planets of (?P<system_name>[a-z]+) system"],
         # planets of solar system
         
+        "ask_star":["tell me star of (?P<system_name>[a-z]+) system", "star of (?P<system_name>[a-z]+) system"],
+        # star of solar system
+        
         "tell_planet":["(?P<planet_name>[a-z]+) is a planet of (?P<system_name>[a-z]+) system"],
         # mars is a planet of solar system
+        
+        "tell_star":["(?P<star_name>[a-z]+) is the star of (?P<system_name>[a-z]+) system"],
+        # sun is the star of solar system
         
         "tell_radius":["the radius of (?P<planet_name>[a-z]+) is (?P<radius>[0-9-z]+) [km|kilometres|kilometres]", "(?P<planet_name>[a-z]+) has radius (?P<radius>[0-9-z]+) [km|kilometres|kilometres]", "(?P<planet_name>[a-z]+) has a radius of (?P<radius>[0-9-z]+) [km|kilometres|kilometres]"],
         # the radius of jupiter is 10 km
@@ -63,6 +70,23 @@ class Agent:
                         "the orbital period of (?P<planet_name>[a-z]+)"],
         # orbital period of jupiter 
 
+        "ask_largest_planet":["what is the largest planet of (?P<system_name>[a-z]+)", "largest planet of (?P<system_name>[a-z]+)" ],
+        # largest planet of solar system
+        
+        "ask_smallest_planet":["what is the smallest planet of (?P<system_name>[a-z]+)", "smallest planet of (?P<system_name>[a-z]+)" ],
+        # smallest planet of solar system
+        
+        "ask_hottest_planet":["what is the hottest planet of (?P<system_name>[a-z]+)", "hottest planet of (?P<system_name>[a-z]+)" ],
+        # hottest planet of solar system
+        
+        "ask_coldest_planet":["what is the coldest planet of (?P<system_name>[a-z]+)", "coldest planet of (?P<system_name>[a-z]+)" ],
+        # smallest planet of solar system
+        
+        "ask_fastest_planet":["what is the fastest planet of (?P<system_name>[a-z]+)", "fastest planet of (?P<system_name>[a-z]+)" ],
+        # fastest planet of solar system
+        
+        "ask_slowest_planet":["what is the slowest planet of (?P<system_name>[a-z]+)", "slowest planet of (?P<system_name>[a-z]+)" ]
+        # slowest planet of solar system
         }
 
     def __init__(self, speaker, listener, name, kb_file):
@@ -94,7 +118,7 @@ class Agent:
         elif key=="tell_system":
             m = re.match(pattern, command)
             name = m.group("name")
-            self.kb["systems"].append({"system":name,"planets":[]})
+            self.kb["systems"].append({"system":name,"star":"","planets":[]})
             self.say_ok()
 
         elif key=="ask_number_system":
@@ -111,6 +135,18 @@ class Agent:
                     self.say_ok()
                     return
             self.say(f"Sorry, I don't know {system_name} system")
+            
+        elif key=="tell_star":
+            m = re.match(pattern, command)
+            star_name = m.group("star_name")            
+            system_name = m.group("system_name")
+            for i, system in enumerate(self.kb["systems"]):
+                if system["system"]==system_name:
+                    self.kb["systems"][i]["star"] = star_name 
+                    self.say_ok()
+                    return
+            self.say(f"Sorry, I don't know {system_name} system")
+
 
         elif key == "ask_system":
             n = len(self.kb["systems"])
@@ -129,6 +165,20 @@ class Agent:
                         self.say(f"The planets that i know are")
                     for p in system["planets"]:
                         self.say(p['planet'])
+                    return
+            self.say(f"Sorry, I don't know {system_name} system")
+        
+        elif key == "ask_star":
+            m = re.match(pattern, command)
+            system_name = m.group("system_name")
+
+            for i, system in enumerate(self.kb["systems"]):
+                if system["system"]==system_name:
+                    if(system["star"]!=""):
+                        self.say(f"I know the star of {system_name} system")
+                        self.say(system['star'])
+                    else:
+                        self.say(f"I don't know the star of {system_name} system")
                     return
             self.say(f"Sorry, I don't know {system_name} system")
         
@@ -301,6 +351,67 @@ class Agent:
                             self.say(f"The orbit time of {planet} is {p['orbit_time'][:-2]} {'months' if p['orbit_time'][-1]=='m' else 'years'}")
                         return
             self.say(f"Sorry i don't know {planet} planet")
+            
+        elif key == "ask_largest_planet":
+            m = re.match(pattern, command)
+            system_name = m.group("system_name")
+            for i, system in enumerate(self.kb["systems"]):
+                if system["system"]==system_name:
+                    largest_planet_name = self.largest_planet(system,0)
+                    self.say(f"{largest_planet_name} is the largest planet of {system_name} system")
+                return
+            self.say(f"Sorry i don't know {system_name} system")
+            
+        elif key == "ask_smallest_planet":
+            m = re.match(pattern, command)
+            system_name = m.group("system_name")
+            for i, system in enumerate(self.kb["systems"]):
+                if system["system"]==system_name:
+                    smallest_planet_name = self.smallest_planet(system,int(sys.float_info.max))
+                    self.say(f"{smallest_planet_name} is the smallest planet of {system_name} system")
+                return
+            self.say(f"Sorry i don't know {planet} planet")
+            
+        elif key == "ask_hottest_planet":
+            m = re.match(pattern, command)
+            system_name = m.group("system_name")
+            for i, system in enumerate(self.kb["systems"]):
+                if system["system"]==system_name:
+                    hottest_planet_name = self.hottest_planet(system,int(sys.float_info.max))
+                    self.say(f"{hottest_planet_name} is the hottest planet of {system_name} system")
+                return
+            self.say(f"Sorry i don't know {planet} planet")
+            
+        elif key == "ask_coldest_planet":
+            m = re.match(pattern, command)
+            system_name = m.group("system_name")
+            for i, system in enumerate(self.kb["systems"]):
+                if system["system"]==system_name:
+                    coldest_planet_name = self.coldest_planet(system,int(sys.float_info.max))
+                    self.say(f"{coldest_planet_name} is the coldest planet of {system_name} system")
+                return
+            self.say(f"Sorry i don't know {planet} planet")
+        
+        elif key == "ask_fastest_planet":
+            m = re.match(pattern, command)
+            system_name = m.group("system_name")
+            for i, system in enumerate(self.kb["systems"]):
+                if system["system"]==system_name:
+                    fastest_planet_name = self.fastest_planet(system,"y",int(sys.float_info.max))
+                    self.say(f"{fastest_planet_name} is the fastest planet of {system_name} system")
+                return
+            self.say(f"Sorry i don't know {planet} planet")
+        
+        elif key == "ask_slowest_planet":
+            m = re.match(pattern, command)
+            system_name = m.group("system_name")
+            for i, system in enumerate(self.kb["systems"]):
+                if system["system"]==system_name:
+                    slowest_planet_name = self.slowest_planet(system,"",0)
+                    self.say(f"{slowest_planet_name} is the slowest planet of {system_name} system")
+                return
+            self.say(f"Sorry i don't know {planet} planet")
+            
     def process(self, command):
         key, i = self.check_match(command)
         if key:
@@ -326,7 +437,82 @@ class Agent:
         print(f"{self.name}: {sentence}")
         self.speaker.speak(sentence)
     
-        
+    def largest_planet(self,system,max):
+        max_planet=""
+        for p in system["planets"]:
+            if (p["radius"]!=None):
+                if (int(p["radius"])>max):
+                    max=int(p["radius"])
+                    max_planet = p['planet'] 
+        if (max_planet == ""):
+            self.say_not_known()
+        return max_planet
+    
+    def smallest_planet(self,system,min):
+        min_planet=""
+        for p in system["planets"]:
+            if (p["radius"]!=None):
+                if (int(p["radius"])<min):
+                    min=int(p["radius"])
+                    min_planet = p['planet'] 
+        if (min_planet == ""):
+            self.say_not_known()
+        return min_planet
+    
+    def hottest_planet(self,system,hot_max):
+        hot_planet=""
+        for p in system["planets"]:
+            if (p["temperature"]!=None):
+                if (int(p["temperature"])>hot_max):
+                    hot_max=int(p["temperature"])
+                    hot_planet = p['planet'] 
+        if (hot_planet == ""):
+            self.say_not_known()            
+        return hot_planet
+    
+    def coldest_planet(self,system,cold_min):
+        cold_planet=""
+        for p in system["planets"]:
+            if (p["temperature"]!=None):
+                if (int(p["temperature"])<cold_min):
+                    cold_min=int(p["temperature"])
+                    cold_planet = p['planet'] 
+        if (cold_planet == ""):
+            self.say_not_known()
+        return cold_planet
+    
+    def fastest_planet(self,system,time_max,fast_min):
+        fast_planet=""
+        for p in system["planets"]:
+            if (p["orbit_time"]!=None):
+                if (p["orbit_time"].split()[1]<time_max):
+                    time_max=p["orbit_time"].split()[1]
+                    fast_min = int(p["orbit_time"].split()[0])
+                    fast_planet = p['planet'] 
+                elif (p["orbit_time"].split()[1]==time_max):
+                    if(int(p["orbit_time"].split()[0])<fast_min):
+                        fast_min = int(p["orbit_time"].split()[0])
+                        fast_planet = p['planet'] 
+        if (fast_planet == ""):
+            self.say_not_known()            
+        return fast_planet
+    
+    def slowest_planet(self,system,time_min,slow_max):
+        slow_planet=""
+        for p in system["planets"]:
+            if (p["orbit_time"]!=None):
+                if (p["orbit_time"].split()[1]>time_min):
+                    time_min=p["orbit_time"].split()[1]
+                    slow_max = int(p["orbit_time"].split()[0])
+                    slow_planet = p['planet'] 
+                elif (p["orbit_time"].split()[1]==time_min):
+                    if(int(p["orbit_time"].split()[0])>slow_max):
+                        slow_max = int(p["orbit_time"].split()[0])
+                        slow_planet = p['planet'] 
+        if (slow_planet == ""):
+            self.say_not_known()            
+        return slow_planet
+    
     def wait_for_approval(self):
         self.say("Are you sure?")
         command = self.listener.listen()
@@ -335,7 +521,6 @@ class Agent:
         while command!= "yes" and command!="no":
             command = self.listener.listen()
             print(f"You: {command}")
-
         if command=="yes":
             return True
         else:
