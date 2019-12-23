@@ -24,14 +24,20 @@ class Agent:
         "tell_planet":["(?P<planet_name>[a-z]+) is a planet of (?P<system_name>[a-z]+) system"],
         # mars is a planet of solar system
         
-        "ask_radius":[],
-        "ask_mass":[],
-        "ask_orbit_time":[],
-        "ask_temperature":[],
-        "tell_radius":["the radius of [a-z]+ is [0-9]+ km", "[a-z]+ has radius [0-9]+ km", "[a-z]+ has a radius of [0-9]+ km"],
+        "tell_radius":["the radius of (?P<planet_name>[a-z]+) is (?P<radius>[0-9-z]+) km", "(?P<planet_name>[a-z]+) has radius (?P<radius>[0-9-z]+) km", "(?P<planet_name>[a-z]+) has a radius of (?P<radius>[0-9-z]+) km"],
+        # the radius of jupiter is 10 km
+
         "tell_mass":["the mass of [a-z]+ is [0-9]+ kg", "[a-z]+ has mass [0-9]+ kg", "[a-z]+ has a mass of [0-9]+ kg"],
         "tell_orbit_time":["the orbit time of [a-z]+ is [0-9]+ [year|month|years|months]","The orbit time of [a-z]+ is of [0-9]+ [year|month|years|months]", "[a-z]+ has orbit time [0-9]+ [year|month|years|months]", "[a-z]+ has a orbit time of [0-9]+ [year|month|years|months]"],
-        "tell_temperature":["the temperature of [a-z]+ is [0-9]+ [degrees [Celsius]?]?", "[a-z]+ has temperature [0-9]+ [degrees [Celsius]?]?", "[a-z]+ has a temperature of [0-9]+ [degrees [Celsius]?]?"]
+        "tell_temperature":["the temperature of [a-z]+ is [0-9]+ [degrees [Celsius]?]?", "[a-z]+ has temperature [0-9]+ [degrees [Celsius]?]?", "[a-z]+ has a temperature of [0-9]+ [degrees [Celsius]?]?"],
+        
+        "ask_radius":["what is the radius of (?P<planet_name>[a-z]+)", "radius of (?P<planet_name>[a-z]+)"],
+        # radius of jupiter
+        
+        "ask_mass":[],
+        "ask_orbit_time":[],
+        "ask_temperature":[]
+
         }
 
     def __init__(self, speaker, listener, name):
@@ -110,7 +116,33 @@ class Agent:
                     self.say(f"I know {len(system['planets'])} planets of {system_name} system")
                     return
             self.say(f"Sorry, I don't know {system_name} system")
+        
+        elif key == "tell_radius":
+            m = re.match(pattern, command)
+            planet = m.group("planet_name")
+            radius = m.group("radius")
+            for i, system in enumerate(self.kb["systems"]):
+                for j, p in enumerate(self.kb["systems"][i]["planets"]):
+                    if p["planet"]==planet:
+                        p["radius"]=radius
+                        self.say_ok()
+                        return
+            self.say(f"Sorry i don't know {planet} planet")
 
+        elif key == "ask_radius":
+            m = re.match(pattern, command)
+            planet = m.group("planet_name")
+            for i, system in enumerate(self.kb["systems"]):
+                for j, p in enumerate(self.kb["systems"][i]["planets"]):
+                    if p["planet"]==planet:
+                        if p["radius"]:
+                            self.say(f"The radius of {planet} is {p['radius']} kilometers")
+                            return
+                        else:
+                            self.say(f"Sorry, I don't know the radius of {planet}")
+                            return
+            self.say(f"Sorry i don't know {planet} planet")
+                        
     def process(self, command):
         key, i = self.check_match(command)
         if key:
