@@ -278,7 +278,7 @@ class Agent:
         else:
             self.say_not_understood()
 
-        print(self.kb)
+        #print(self.kb)
     def say_ok(self):
         print(f"{self.name}: OK")
         self.speaker.speak("ok")
