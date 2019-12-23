@@ -39,6 +39,9 @@ class Agent:
         "tell_mass":["the mass of (?P<planet_name>[a-z]+) is (?P<mass>[0-9-z]+) [kg|kilograms]", "(?P<planet_name>[a-z]+) has mass (?P<mass>[0-9-z]+) [kg|kilograms]", "(?P<planet_name>[a-z]+) has a mass of (?P<mass>[0-9-z]+) [kg|kilograms]"],
         # jupiter has mass of 10 kilograms
 
+        "tell_temperature":["the temperature of (?P<planet_name>[a-z]+) is (?P<temperature>[0-9-z]+) [degrees]", "(?P<planet_name>[a-z]+) has temperature (?P<temperature>[0-9-z]+) [degrees]"],
+        # jupiter has mass of 10 kilograms
+
         "tell_orbit_time":["the orbital period of (?P<planet_name>[a-z]+) is (?P<orbit_time>[0-9]+ [year|month|years|months])",
                            "the orbital period of (?P<planet_name>[a-z]+) is of (?P<orbit_time>[0-9]+ [year|month|years|months])",
                            "orbital period of (?P<planet_name>[a-z]+) is (?P<orbit_time>[0-9]+ [year|month|years|months])",
@@ -51,6 +54,9 @@ class Agent:
         # radius of jupiter
         
         "ask_mass":["what is the mass of (?P<planet_name>[a-z]+)", "mass of (?P<planet_name>[a-z]+)"],
+        # mass of jupiter
+
+        "ask_temperature":["what is the temperature of (?P<planet_name>[a-z]+)", "temperature of (?P<planet_name>[a-z]+)"],
         # mass of jupiter
 
         "ask_orbit_time":["what is the orbital period of (?P<planet_name>[a-z]+)", "orbital period of (?P<planet_name>[a-z]+)",
@@ -187,6 +193,32 @@ class Agent:
                             self.say(f"Sorry, I don't know the mass of {planet}")
                             return
             self.say(f"Sorry i don't know {planet} planet")  
+
+        elif key == "tell_temperature":
+            m = re.match(pattern, command)
+            planet = m.group("planet_name")
+            temperature = m.group("temperature")
+            for i, system in enumerate(self.kb["systems"]):
+                for j, p in enumerate(self.kb["systems"][i]["planets"]):
+                    if p["planet"]==planet:
+                        p["temperature"]=temperature
+                        self.say_ok()
+                        return
+            self.say(f"Sorry i don't know {planet} planet")
+
+        elif key == "ask_temperature":
+            m = re.match(pattern, command)
+            planet = m.group("planet_name")
+            for i, system in enumerate(self.kb["systems"]):
+                for j, p in enumerate(self.kb["systems"][i]["planets"]):
+                    if p["planet"]==planet:
+                        if p["temperature"]:
+                            self.say(f"The temperature of {planet} is {p['temperature']} degrees")
+                            return
+                        else:
+                            self.say(f"Sorry, I don't know the temperature of {planet}")
+                            return
+            self.say(f"Sorry i don't know {planet} planet")       
 
         elif key == "tell_orbit_time":
             m = re.match(pattern, command)
