@@ -46,8 +46,6 @@ class Agent:
                            "(?P<planet_name>[a-z]+) has orbital period of (?P<orbit_time>[0-9]+ [year|month|years|months])",
                            "(?P<planet_name>[a-z]+) has a orbital period of (?P<orbit_time>[0-9]+ [year|month|years|months])"],
         # the orbital period of jupiter is 10 years
-
-        #"tell_temperature":["the temperature of [a-z]+ is [0-9]+ [degrees [Celsius]?]?", "[a-z]+ has temperature [0-9]+ [degrees [Celsius]?]?", "[a-z]+ has a temperature of [0-9]+ [degrees [Celsius]?]?"],
         
         "ask_radius":["what is the radius of (?P<planet_name>[a-z]+)", "radius of (?P<planet_name>[a-z]+)"],
         # radius of jupiter
@@ -59,15 +57,13 @@ class Agent:
                         "the orbital period of (?P<planet_name>[a-z]+)"],
         # orbital period of jupiter 
 
-        #"ask_temperature":[]
-
         }
 
-    def __init__(self, speaker, listener, name):
+    def __init__(self, speaker, listener, name, kb_file):
         self.name = name
         self.speaker = speaker
         self.listener = listener
-        self.kb_manager = KB()
+        self.kb_manager = KB(kb_file)
         self.kb = self.kb_manager.get_kb()
 
     def check_match(self, command):
