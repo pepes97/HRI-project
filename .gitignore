@@ -1,0 +1,5 @@
+.vscode/settings.json
+agent/__pycache__/agent.cpython-36.pyc
+listener/__pycache__/listener.cpython-36.pyc
+speaker/__pycache__/speaker.cpython-36.pyc
+agent/__pycache__/kb.cpython-36.pyc
