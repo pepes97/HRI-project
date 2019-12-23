@@ -1,7 +1,11 @@
 import re
+from agent.kb import KB
 
 class Agent:
     templates = {
+        "save":["save", "save knowledge", "save your knowledge"],
+        #save
+
         "ask_system":["what systems do you know", "talk me about systems you know"],
         # what systems do you know
         
@@ -30,10 +34,12 @@ class Agent:
         "tell_temperature":["the temperature of [a-z]+ is [0-9]+ [degrees [Celsius]?]?", "[a-z]+ has temperature [0-9]+ [degrees [Celsius]?]?", "[a-z]+ has a temperature of [0-9]+ [degrees [Celsius]?]?"]
         }
 
-    def __init__(self, speaker, name):
+    def __init__(self, speaker, listener, name):
         self.name = name
         self.speaker = speaker
-        self.kb = {"systems":[]}
+        self.listener = listener
+        self.kb_manager = KB()
+        self.kb = self.kb_manager.get_kb()
 
     def check_match(self, command):
         for key in Agent.templates:
@@ -45,7 +51,16 @@ class Agent:
         return None, 0
 
     def act(self, key, pattern, command):
-        if key=="tell_system":
+        if "tell" in key:
+            approved = self.wait_for_approval()
+            if not approved:
+                self.say("I don't learn this")
+                return
+        if key == "save":
+            self.kb_manager.save(self.kb)
+            self.say_ok()
+
+        elif key=="tell_system":
             m = re.match(pattern, command)
             name = m.group("name")
             self.kb["systems"].append({"system":name,"planets":[]})
@@ -122,4 +137,16 @@ class Agent:
         self.speaker.speak(sentence)
     
         
-        
+    def wait_for_approval(self):
+        self.say("Are you sure?")
+        command = self.listener.listen()
+        print(f"You: {command}")
+
+        while command!= "yes" and command!="no":
+            command = self.listener.listen()
+            print(f"You: {command}")
+
+        if command=="yes":
+            return True
+        else:
+            return False

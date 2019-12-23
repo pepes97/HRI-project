@@ -8,6 +8,13 @@ class Listener():
         return
 
     def listen(self):
+        command, ret = self._listen()
+        while ret != Listener.OK:
+            command, ret = self._listen()
+
+        return command
+
+    def _listen(self):
         r = sr.Recognizer()
         
         with sr.Microphone() as source:

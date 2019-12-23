@@ -15,10 +15,10 @@ listener = Listener()
 speaker = Speaker()
 
 bot_name = "\t\t\t\t\tAstroBot"
-agent = Agent(speaker, bot_name)
+agent = Agent(speaker, listener, bot_name)
 
 while True:
-    command, ret = listener.listen()
+    command = listener.listen()
     command = command.strip()
 
     if command == "exit":
@@ -26,19 +26,18 @@ while True:
         speaker.speak("Bye bye")
         break
 
-    if ret == Listener.OK:
-        print(f"You: {command}")
+    
+    print(f"You: {command}")
         #speaker.speak(f"You said {command}")
         
         #doc = nlp(command)
         #doc.sentences[-1].print_dependencies()
         
         #TODO: process command inside the agent
-        agent.process(command)
+    agent.process(command)
 
     #elif ret == Listener.UNKNOWN_VALUE:
     #    print("I didnt get that. Try to repeat")
     #    speaker.speak("I didn't get that Try to repeat")
         
-    else:
-        print(f"{bot_name}: I didn't get that Try to repeat")
+    
