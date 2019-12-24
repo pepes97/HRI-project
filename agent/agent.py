@@ -262,7 +262,7 @@ class Agent:
                 for j, p in enumerate(self.kb["systems"][i]["planets"]):
                     if p["planet"]==planet:
                         if p["temperature"]:
-                            self.say(f"The temperature of {planet} is {p['temperature']} degrees")
+                            self.say(f"The temperature of {planet} is {p['temperature']} kelvin degrees")
                             return
                         else:
                             self.say(f"Sorry, I don't know the temperature of {planet}")
@@ -302,6 +302,8 @@ class Agent:
                 self.say(f"{system['system']} system")
 
             for i, system in enumerate(self.kb["systems"]):
+                if system["star"]:
+                    self.say(f"The star of {system['system']} system is {system['star']}")
                 self.say(f"I know {len(system['planets'])} planets of {system['system']} system")
                 if len(system['planets'])>0:
                     self.say(f"The planets that i know in {system['system']} system are")
@@ -315,13 +317,15 @@ class Agent:
                     if p["orbit_time"]:
                         self.say(f"The orbit time of {p['planet']} is {p['orbit_time'][:-2]} {'months' if p['orbit_time'][-1]=='m' else 'years'}")
                     if p["temperature"]:
-                            self.say(f"The temperature of {planet} is {p['temperature']} degrees")
+                            self.say(f"The temperature of {p['planet']} is {p['temperature']} kelvin degrees")
         elif key == "ask_all_about_system":
             m = re.match(pattern, command)
             system_name = m.group("system_name")
-
+            
             for i, system in enumerate(self.kb["systems"]):
                 if system["system"]==system_name:
+                    if system["star"]:
+                        self.say(f"The star of {system['system']} system is {system['star']}")
                     self.say(f"I know {len(system['planets'])} planets of {system['system']} system")
                     if len(system['planets'])>0:
                         self.say(f"The planets that i know in {system['system']} system are")
@@ -335,7 +339,7 @@ class Agent:
                         if p["orbit_time"]:
                             self.say(f"The orbit time of {p['planet']} is {p['orbit_time'][:-2]} {'months' if p['orbit_time'][-1]=='m' else 'years'}")                    
                         if p["temperature"]:
-                            self.say(f"The temperature of {planet} is {p['temperature']} degrees")
+                            self.say(f"The temperature of {p['planet']} is {p['temperature']} kelvin degrees")
                     return
             self.say(f"Sorry, I don't know {system_name} system")
 
@@ -353,7 +357,7 @@ class Agent:
                         if p["orbit_time"]:
                             self.say(f"The orbit time of {planet} is {p['orbit_time'][:-2]} {'months' if p['orbit_time'][-1]=='m' else 'years'}")
                         if p["temperature"]:
-                            self.say(f"The temperature of {planet} is {p['temperature']} degrees")
+                            self.say(f"The temperature of {planet} is {p['temperature']} kelvin degrees")
                         return
             self.say(f"Sorry i don't know {planet} planet")
             
