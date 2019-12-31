@@ -1,0 +1,64 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[table, svgnames, dvipsnames]{xcolor}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{ subcaption }
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\graphicspath{ {images/} }
+\author{Alessio Ragno}
+\title{Reinforcement Learning Project Report}
+\date{November 2019}
+
+\begin{document}
+
+% \maketitle
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+        
+        \huge
+        \textbf{Reinforcement Learning Implementation Project Report}
+        
+        
+        \vspace{1.5cm}
+        \LARGE
+        Alessio Ragno
+        
+        \vfill
+        
+        \includegraphics[width=0.2\textwidth]{sapienza_logo.png}
+
+
+        
+        \vfill
+        
+  
+
+        \vspace{0.5cm}
+        
+        
+        \large
+        Master's Degree in Artificial Intelligence and Robotics\break\break
+        Department of Computer, Control and Management Engineering\break\break
+        Sapienza University of Rome\break\break
+        December 2019
+
+    \end{center}
+\end{titlepage}
+
+
+
+\pagebreak
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
