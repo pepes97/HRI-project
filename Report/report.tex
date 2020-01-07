@@ -13,30 +13,39 @@ footskip=.25in]{geometry}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{ subcaption }
-\usepackage{algorithm}
-\usepackage{algorithmic}
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
 \usepackage{hyperref}
 \graphicspath{ {images/} }
 \usepackage{listings}
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
-\lstset{frame=tb,
-	language=Python,
-	aboveskip=3mm,
-	belowskip=3mm,
-	showstringspaces=false,
-	columns=flexible,
-	basicstyle={\small\ttfamily},
-	numbers=none,
-	numberstyle=\tiny\color{gray},
-	keywordstyle=\color{blue},
-	commentstyle=\color{dkgreen},
-	stringstyle=\color{mauve},
-	breaklines=true,
-	breakatwhitespace=true,
-	tabsize=3
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
 }
+ 
+\lstset{style=mystyle}
 \author{Simone Tedeschi}
 \title{Spoken Human-Robot Interaction}
 \date{November 2019}
@@ -80,23 +89,30 @@ footskip=.25in]{geometry}
 \pagebreak
 
 \section{Introduction}\label{1}
+\paragraph{}
 The goal of the project is to build a task oriented Spoken Dialogue System (SDS).
-\\To do this there are different steps to follow:
+\\In order to do this there are different steps to follow:
 \begin{itemize}
-\item Install and use tools for speech processing, dependency parsing and text-to-speech.
+\item Install and use the tools for speech processing, dependency parsing and text-to-speech.
 For the speech processing we have used \href{https://pypi.org/project/SpeechRecognition/}{Google Speech Recognition}, then we used \href{https://stanfordnlp.github.io/stanfordnlp/}{StanfordNLP} as dependency parser and the python library \href{https://pypi.org/project/pyttsx3/}{pyttsx3} for the text-to-speech process.
 \item Implement a program that acquires a spoken sentence, calls the ASR (Automatic Speech Recognition) to get the corresponding text, then calls the Dependency Parser and prints the graph. Therefore, test the correct operation of the above mentioned pipeline.
 \item In the end, implement the task oriented dialogue in a specific scenario, by identifying a set of frames and implementing a dialogue finalized to slot filling. In our application the scenario is the space, in particular planetary systems, in which the agent (that we have called \textbf{AstroBot}) is able to learn new things about them and also answer to queries. Further on more details about frames structure will be given.
 \end{itemize}
 \section{Implementation}\label{2}
-The structure of the project is divided in three main modules: the Listener, the Speaker and the Agent.
-In this chapter we will see in detail how they works and we'll understand the general behaviour of the program.
+\paragraph{}
+The structure of the project is divided in three main modules: the Listener, the Agent and the Speaker.
+In this chapter we will see in detail how they work and we'll understand the general behaviour of the program.
 \subsection{Listener}
-The first thing that the AstroBot says when the program starts is "Hi, How can I help you?" and then, obviously, the Listener module is invoked.
-\\\\The aim of this class is only to acquire commands from the microphone and store these commands in a string in such a way that then, other modules, can use them. To acquire informations from the microphone we use the above mentioned Automatic Speech Recognition provided by Google. 
-\\\\Moreover, to incentivize the user to speak, and for making the software more interactive, the program shows the message "Say something...", listening until some command is received.
-\\\\The following fragment of code shows what just described:
-\begin{lstlisting}
+\paragraph{}
+The first thing that the AstroBot says when the program starts is \textit{"Hi, How can I help you?"} and then, obviously, the Listener module is invoked.
+\paragraph{}
+The aim of this class is only to acquire commands from the microphone and store these commands in a string in such a way that then, other modules, could use it. To acquire informations from the microphone we have used the above mentioned Automatic Speech Recognition provided by Google. 
+\paragraph{}
+Moreover, to incentivize the user to speak, and for making the software more interactive, the program shows the message \textit{"Say something..."}, listening until some command is received.
+\paragraph{}
+The following fragment of code shows what just described:
+\vspace{1em}
+\begin{lstlisting}[language=Python, caption=The function that actually listens to the user and returns a string of text]
 def _listen(self):
 	r = sr.Recognizer()
 	
@@ -116,28 +132,42 @@ def _listen(self):
 	
 	return command, ret
 \end{lstlisting}
-This function is inside a "while True" loop that allows the agent to listen for consecutive messages.
+\paragraph{}
+This function is called inside a "while" loop, so that allows the agent to listen for consecutive messages when something goes wrong in the acquisition of the command.
 \subsection{Agent}
-When the command is acquired it is passed to the Agent module that will process the information through two main steps that will be analyzed in this chapter.
+\paragraph{}
+When the command is acquired, it is passed to the Agent module that will process the information through two main steps that will be analyzed in this chapter.
 \subsubsection{Check}
-The first thing that agent do is to check whether the received message matches with his capabilities, namely if the message matches with the templates that agent knows.
-\\\\ Templates are strings plus regular expressions that allow the agent to "classify" the messages in different categories. For example when the message is of the type "What is..." he understands that is a query. On the other hand, when the sentence has a declarative form such as "The temperature of Mars is..." he becomes immediately ready to acquire new informations and ask you to confirm what you said before acquisition.
-Now there are two possibilities: either the command matches with his templates or the command his unsolvable for the agent.
-In the first case the process goes on with the next step of the pipeline, in the second one he answers "Probably I didn't understand what you said" and he listens for a new command. 
-\subsubsection{Act}\label{2.2.2}
-If we are here it means that the message said by the user matches with one of the templates of the agent.
-\\\\Now what the agent has to do is to understand at which class the message belongs to and behave consequently.
-Suppose that the message is "Solar is a system". He searches between his templates and sees that this sentence belongs to category "tell\_system", as shown below:
-\begin{lstlisting}
+\paragraph{}
+The first thing that the agent do is to check whether the received message matches with his capabilities, namely if the message matches with the templates that agent knows.
+\paragraph{}
+Templates are composed by regular expressions that allow the agent to "classify" the messages in different categories. For example when the message is of the type \textit{"What is ..."}, he understands that is a query. On the other hand, when the sentence has a declarative form such as \textit{"The temperature of Mars is ..."}, he becomes immediately ready to acquire new informations and asks you to confirm what you said before the  overwrite of the database.
+\paragraph{}
+Now there are two possibilities: either the command matches with one of his templates or the command his unsolvable for the agent.
+In the first case the process goes on with the next step of the pipeline, in the second one he answers \textit{"Probably I didn't understand what you said"} and he starts to listen for a new command. 
+\paragraph{}
+Now what the agent has to do is to understand at which class the message belongs to and behave consequently.
+Suppose that the message is \textit{"Solar is a system"}. He searches between his templates and sees that this sentence belongs to category "tell\_system", as shown below:
+\vspace{1em}
+\begin{lstlisting}[language=Python]
 templates = {
 	...
 	"tell_system":["(?P<name>[a-z]+) is a system"],
 	...
 }
 \end{lstlisting}
-Once he recognized the category, he calls the "act" function in which there is a condition (if/elif/else) for each type of sentence. In this particular case he will create a frame, in his knowledge base, associated to the solar system with an empty list of planets and the main star of system setted to "None". These fields of the system can be filled with subsequent commands of the type "Earth is a planet of solar system" or "Sun is the star of solar system" and so on. 
-\\\\Below is shown the "elif" that handles the command taken as example:
-\begin{lstlisting}
+\paragraph{}
+Each category is composed by a list of several templates, so that the user has a set of possibilities to ask for the same command to the bot.
+
+\subsubsection{Act}\label{2.2.2}
+\paragraph{}
+If we are here it means that the message said by the user matches with one of the templates of the agent.
+\paragraph{}
+Once he recognized the category, he calls the \textit{"act"} function in which he acts differently depending on the category of the message. Continuing the previous example he will create a frame in his knowledge base, associated to the solar system with an empty list of planets and an unknown main star. These fields of the system can be filled with subsequent commands of the type \textit{"Earth is a planet of solar system"} or \textit{"Sun is the star of solar system"} and so on. 
+\paragraph{}
+Below is shown the handling of the command taken as example:
+\vspace{1em}
+\begin{lstlisting}[language=Python]
 def act(self, key, pattern, command):
 	...
 	elif key=="tell_system":
@@ -148,28 +178,36 @@ def act(self, key, pattern, command):
 		self.say_ok()
 	...
 \end{lstlisting}
-For completeness we say that once a planet is added to a system it has, in turn, many other attributes that can be filled that are: radius, mass, orbit\_time and temperature. For example to add the temperature of a Mars, you have to say "The temperature of Mars is 210 degrees" and similarly for other attributes.
-\\\\There are two more types of commands, in addition to those with which you can ask or tell informations, that are:
+\paragraph{}
+For completeness we say that once a planet is added to a system it has, in turn, many other attributes that can be filled that are: radius, mass, orbit\_time and temperature. For example to add the temperature of Mars, you have to say \textit{"The temperature of Mars is 210 degrees"} and similarly for other attributes.
+\paragraph{}
+There are two more types of commands, in addition to those used for asking or telling informations, that are:
 \begin{itemize}
 \item \textbf{save}: when this command is pronounced the agent stores all the notions acquired in the current session in his knowledge base;
-\item \textbf{exit}: when this command is pronounced the agent says "Bye bye" and quits the application.
+\item \textbf{exit}: when this command is pronounced the agent says \textit{"Bye bye"} and quits the application.
 \end{itemize}
-Moreover, when the AstroBot is enough "cultured", you can have fun asking him questions about the things that he learned.
-For example, more advanced things that you can ask (wrt what we have seen in the examples) are:
+\paragraph{}
+Moreover, when the AstroBot is enough "cultured", you can have fun asking him questions about the things that he learnt.
+For example, more advanced things that you can ask (w.r.t. what we have seen in the examples) are:
 \begin{itemize}
-	\item What is the largest/hottest/fastest (respectively smallest/coldest/slower) planet?
-	\item What do you know about Solar System (or even a single planet)?
-	\item What do you know?
+	\item \textit{What is the largest/hottest/fastest} (respectively \textit{smallest/coldest/slower}) \textit{planet of Solar System?}
+	\item \textit{What do you know about Solar System?} (or even a single planet)
+	\item \textit{What do you know?}
 \end{itemize}
-In the last example he will answer saying whatever he knows about systems, planets of those systems and attributes of planets of those systems.
+\paragraph{}
+In the last case he will answer saying whatever he knows about systems, planets of those systems and informations about planets of those systems.
 
 \subsection{Speaker}
+\paragraph{}
 The last module, that is invoked when the agent has something to say to the user, is the speaker.
 Returning to the example seen in section \ref{2.2.2}, in the act function, the agent calls another function called \textit{say\_ok()}.
-In the agent module we defined several functions like this, that are \textit{say()}, \textit{say\_not\_known()}, \textit{wait\_for\_approvals()} and others, which do nothing more than invoking the speaker (using the \textit{speaker.speak()} function) module passing him a specific string to say.
-\\\\The speaker module, using the TextToSpeech python library (shown in the introduction \ref{1}, is able to convert the written sentence selected by the agent into a vocal sentence.
-Below is displayed the code of what just said:
-\begin{lstlisting}
+In the agent module we defined several functions like this, that are \textit{say()}, \textit{say\_not\_known()}, and others, that do nothing more than invoking the speaker module passing him a specific string to say (using the \textit{speaker.speak()} method).
+\paragraph{}
+The speaker module is able to convert the written sentence selected by the agent into a vocal sentence. It has been implemented using the TextToSpeech python library (shown in the introduction \ref{1}).
+\paragraph{}
+Below is displayed the code of what we have just said:
+\vspace{1em}
+\begin{lstlisting}[language=Python]
 import pyttsx3
 
 class Speaker:
@@ -182,24 +220,44 @@ class Speaker:
 		self.engine.say(sentence)
 		self.engine.runAndWait()
 \end{lstlisting}
-The init functions simply set the volume and the rate of the voice.
+\paragraph{}
+The init function simply set the volume and the rate of the voice.
 
 \section{Knowledge base}
-Another core part of the project, which allows a great part of the operations described in Chapter \ref{2} is the Knowledge Base or KB, that we modeled as a json file.
-\\\\Here are defined important methods that we use to create, load and save knowledge bases.
-By default our program, every time that it starts, it loads the most recent knowledge base. This is possible because whenever the user pronounce the command save (explained in section \ref{2.2.2}) it saves the new KB with the format <date-hour>\_kb.json.
-\\Moreover, this method that we adopt, allows the user to load a specific knowledge base, specifying his name from the command line using the additional argument \textbf{- -kb\_file}.
-\\\\The structure of the knowledge base, that we have already met different times, is the following:
+\paragraph{}
+Another core part of the project, which allows a great part of the operations described in Chapter \ref{2}, is the Knowledge Base or KB.
+We modeled the KB as a non-relational database (in the specific case as a json file) in order to be fast in reading and writing the KB and also because it is very easy to manage. In fact, inside the Python code the KB can be easily represented as a dictionary with couples \textit{key-value}.
+\paragraph{}
+Here are defined methods that we use to create, load and save knowledge bases. It is possible that inside the folder there are more versions of the knowledge base. By default, when the program starts, it loads the most recent one. This is possible because whenever the user pronounce the command \textit{save} (explained in section \ref{2.2.2}) the bot saves the new KB with a timestamp. 
+\paragraph{}
+Of course it is possible to load a custom knowledge base specifying its name form the command line (with the argument \textbf{- -kb\_file}).
+\paragraph{}
+The structure of the knowledge base is the following:
 \begin{itemize}
-\item \textbf{systems}: they are the outermost boxes, so the most general objects that can be added to the KB, and they indicate planetary systems like solar system. Every system contains a list of planets and the main star of the system;
+\item \textbf{systems}: they are the outermost boxes, so the most general objects that can be added to the KB, and they indicate planetary systems like \textit{solar system}. Every system contains a list of planets and the main star of the system;
 \item \textbf{planets}: they are sub-objects of systems, but they have their own attributes: name, radius, mass, orbit\_time and temperature;
 \item \textbf{star}: it is the main star of a system (for example Sun for Solar System).
 \end{itemize}
+\paragraph{}
 Initially the knowledge base has only an empty list of systems and then it is populated by teaching new things to the AstroBot.
-\\\\Below is represented an example of KB where the agent knows only that Solar System is a system and that the main star is the Sun:
-\begin{lstlisting}
+\paragraph{}
+Below is represented an example of KB where the agent knows only that Solar System is a system and that the main star is the Sun:
+\vspace{1em}
+\begin{lstlisting}[language=Python]
 {"systems": [{"system": "solar", "planets": [], "star": "sun"}]}
 \end{lstlisting}
-
+\section{Dependency Graph}
+\paragraph{}
+It is possible to print and see the dependency tree of every pronounced sentence. By default it is disabled, but it can be enabled with the argument \textbf{- -dep\_tree True}.
+\paragraph{}
+We use the \textbf{stanfordnlp} model in order to create the dependency tree. It is based on a neural network trained on english sentences and it is able to find connections between words of the sentence.
 \section{Conclusions}
+\paragraph{}
+This project uses a very simple approach in order to implement a system based on vocal interaction.
+Despite this, it is possible to make some improvements:
+\begin{itemize}
+\item The speech-to-text part is left to the Google Web Speech API. This service is very good in the testing phase but generally it is not a good idea to use it in production because you are limited to only 50 requests per day and there is also the chance that Google may revoke it at any time.
+\item In order to match the correct class of a query, an approach based on machine learning can easily improve the agent in terms of the number of possible sentences that the agent can handle.
+\end{itemize}
+Even if the project is very simple it shows the entire pipeline of a common Spoken Dialogue System. 
 \end{document}
