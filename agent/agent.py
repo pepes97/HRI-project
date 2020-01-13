@@ -1,6 +1,10 @@
 import re
 import sys
 from agent.kb import KB
+from colorama import init
+from termcolor import colored
+
+init(autoreset=True)
 
 class Agent:
     templates = {
@@ -449,19 +453,19 @@ class Agent:
 
         #print(self.kb)
     def say_ok(self):
-        print(f"{self.name}: OK")
+        print(f"{self.name} OK")
         self.speaker.speak("ok")
     
     def say_not_known(self):
-        print(f"{self.name}: Sorry, I don't have this information")
+        print(f"{self.name} Sorry, I don't have this information")
         self.speaker.speak("Sorry, I do not have this information")
 
     def say_not_understood(self):
-        print(f"{self.name}: probably I didn't understand what you said")
+        print(f"{self.name} probably I didn't understand what you said")
         self.speaker.speak("probably I didn't understand what you said")
 
     def say(self, sentence):
-        print(f"{self.name}: {sentence}")
+        print(f"{self.name} {sentence}")
         self.speaker.speak(sentence)
     
     def largest_planet(self,system):
@@ -545,13 +549,14 @@ class Agent:
         return slow_planet
     
     def wait_for_approval(self):
+        colorYou = colored('You:', 'green')
         self.say("Are you sure?")
         command = self.listener.listen()
-        print(f"You: {command}")
+        print(f"{colorYou} {command}")
 
         while command!= "yes" and command!="no":
             command = self.listener.listen()
-            print(f"You: {command}")
+            print(f"{colorYou} {command}")
         if command=="yes":
             return True
         else:

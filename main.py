@@ -3,6 +3,10 @@ from listener.listener import Listener
 from speaker.speaker import Speaker
 import stanfordnlp
 import argparse
+from colorama import init
+from termcolor import colored
+
+init(autoreset=True)
 
 parser = argparse.ArgumentParser(description='An interactive bot to talk about stars and planets')
 parser.add_argument('--dep_tree', default=False, type=bool, help='print dependencies tree of every heard sentence (default: False)')
@@ -20,20 +24,21 @@ listener = Listener()
 speaker = Speaker()
 
 bot_name = "\t\t\t\t\tAstroBot"
-agent = Agent(speaker, listener, bot_name, args.kb_file)
-print(f"{bot_name}: Hi, how can I help you?")
+colorAstro = colored(bot_name +':', 'yellow')
+agent = Agent(speaker, listener, colorAstro, args.kb_file)
+print(f"{colorAstro} Hi, how can I help you?")
 speaker.speak("Hi, how can I help you?")
-
 while True:
     command = listener.listen()
     command = command.strip()
 
     if command == "exit":
-        print(f"{bot_name}: Bye bye")
+        print(f"{colorAstro} Bye bye")
         speaker.speak("Bye bye")
         break
-
-    print(f"You: {command}")
+    
+    colorYou = colored('You:', 'green')
+    print(f"{colorYou} {command}")
     if args.dep_tree:
         
         doc = nlp(command)
