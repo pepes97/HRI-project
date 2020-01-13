@@ -13,6 +13,7 @@ args = parser.parse_args()
 # TO BUILD THE DEPENDENCIES TREE
 if args.dep_tree:
     stanfordnlp.download('en')   # This downloads the English models for the neural pipeline
+    print('Building pipeline...')
     nlp = stanfordnlp.Pipeline() # This sets up a default neural pipeline in English
 
 listener = Listener()
@@ -36,6 +37,13 @@ while True:
     if args.dep_tree:
         
         doc = nlp(command)
+        print('\n')
+        print('TOKENS OF COMMAND \n')
+        print(*[f'text: {word.text+" "}\tlemma: {word.lemma}\tupos: {word.upos}\txpos: {word.xpos}' 
+                for sent in doc.sentences 
+                    for word in sent.words], sep='\n') 
+        print('---------------------------------------------')
+        print('DEPENDENCY PARSE OF COMMAND \n')
         doc.sentences[-1].print_dependencies()
-        
+               
     agent.process(command)
