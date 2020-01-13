@@ -3,7 +3,7 @@
 ## Requirements
 ```bash
 sudo apt install libespeak1
-python3 -m pip install SpeechRecognition pyttsx3 pygame wikipedia stanfordnlp --user
+python3 -m pip install SpeechRecognition pyttsx3 pygame wikipedia stanfordnlp colorama termcolor --user
 sudo apt install python-pyaudio python3-pyaudio
 ```
 
